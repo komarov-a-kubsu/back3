@@ -1,11 +1,11 @@
 <?php
-
+ 
 // Настройки подключения к базе данных
 $servername = "localhost";
 $username = "u52979";
 $password = "2087021";
-$dbname = "test";
-
+$dbname = "u52979";
+ 
 // Создание подключения
 try {
     $db = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password, [
@@ -15,7 +15,7 @@ try {
 } catch (PDOException $e) {
     die("Connection failed: " . $e->getMessage());
 }
-
+ 
 // Получение данных из формы
 $name = $_POST["name"];
 $email = $_POST["email"];
@@ -25,39 +25,43 @@ $limbs = $_POST["limbs"];
 $abilities = $_POST["abilities"];
 $bio = $_POST["bio"];
 $contract = $_POST["contract"] == "accepted";
-
+ 
 // Валидация данных
 $errors = [];
-
+ 
 if (!preg_match("/^[a-zA-Zа-яА-ЯёЁ\s]+$/u", $name)) {
     $errors[] = "Имя содержит недопустимые символы.";
 }
-
+ 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $errors[] = "Неверный формат e-mail.";
 }
-
+ 
 if (!empty($errors)) {
     foreach ($errors as $error) {
         echo $error . "<br>";
     }
     die();
 }
-
+ 
 // Сохранение данных в базе данных
 try {
     $stmt = $db->prepare("INSERT INTO users (name, email, birth_year, gender, limbs, bio, contract) VALUES (?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([$name, $email, $birth_year, $gender, $limbs, $bio, $contract]);
-
+ 
     $user_id = $db->lastInsertId();
-
+ 
+    $stmt = $db->prepare("SELECT id FROM abilities WHERE ability_name = ?");
     foreach ($abilities as $ability) {
-        $stmt = $db->prepare("INSERT INTO abilities (user_id, ability) VALUES (?, ?)");
-        $stmt->execute([$user_id, $ability]);
+        $stmt->execute([$ability]);
+        $ability_id = $stmt->fetchColumn();
+ 
+        $stmt2 = $db->prepare("INSERT INTO user_abilities (user_id, ability_id) VALUES (?, ?)");
+        $stmt2->execute([$user_id, $ability_id]);
     }
-
+ 
     echo "Данные успешно сохранены.";
-
+ 
 } catch (PDOException $e) {
     print('Error : ' . $e->getMessage());
     exit();
