@@ -46,7 +46,27 @@
 
             <input type="submit" value="Отправить">
         </form>
+        
     </div>
+    
+    <form action="fetch_data.php" method="POST">
+    <!-- Радиокнопки для выбора таблицы -->
+    <div>
+        <h3>Выберите таблицу для отображения данных:</h3>
+        <input type="radio" id="users" name="table" value="users" checked>
+        <label for="users">Пользователи</label><br>
+        <input type="radio" id="abilities" name="table" value="abilities">
+        <label for="superpowers">Способности</label><br>
+        <input type="radio" id="user_abilities" name="table" value="user_abilities">
+        <label for="user_superpowers">Пользователи-способности</label>
+    </div>
+ 
+    <button type="submit">Получить данные</button>
+</form>
+<br/>
+    <footer>
+        <a href="./report.html">Отчёт</a>
+    </footer>
     <script>
         // Заполнение списка годов
         const select = document.getElementById('birth_year');
