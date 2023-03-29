@@ -49,7 +49,7 @@ try {
     $stmt = $db->prepare("INSERT INTO users (name, email, birth_year, gender, limbs, bio, contract) VALUES (?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([$name, $email, $birth_year, $gender, $limbs, $bio, $contract]);
  
-    $user_id = $db->lastInsertId();
+    /*$user_id = $db->lastInsertId();
  
     $stmt = $db->prepare("SELECT id FROM abilities WHERE ability_name = ?");
     foreach ($abilities as $ability) {
@@ -59,6 +59,16 @@ try {
         $stmt2 = $db->prepare("INSERT INTO user_abilities (user_id, ability_id) VALUES (?, ?)");
         $stmt2->execute([$user_id, $ability_id]);
     }
+ 
+    echo "Данные успешно сохранены.";*/
+    $user_id = $db->lastInsertId();
+ 
+    // Создание JSON-массива со списком способностей пользователя
+    $abilities_json = json_encode($abilities, JSON_UNESCAPED_UNICODE);
+ 
+    // Сохранение списка способностей пользователя в таблице user_superpowers
+    $stmt = $db->prepare("INSERT INTO user_superpowers (user_id, superpowers) VALUES (?, ?)");
+    $stmt->execute([$user_id, $abilities_json]);
  
     echo "Данные успешно сохранены.";
  
